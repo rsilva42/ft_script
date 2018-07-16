@@ -23,14 +23,14 @@ char	isflag(char **av, int i, char ret)
 			av[i][c] != 'p' && av[i][c] != 'f' && av[i][c] != 'd' &&
 			av[i][c] != 't' && av[i][c] != 'k')
 			return (-1);
-		ret = ret | ((av[i][c] == 'a') ?  FLAG_A : 0);
-		ret = ret | ((av[i][c] == 'q') ?  FLAG_Q : 0);
-		ret = ret | ((av[i][c] == 'r') ?  FLAG_R : 0);
-		ret = ret | ((av[i][c] == 'p') ?  FLAG_P : 0);
-		ret = ret | ((av[i][c] == 'f') ?  FLAG_F : 0);
-		ret = ret | ((av[i][c] == 'd') ?  FLAG_D : 0);
-		ret = ret | ((av[i][c] == 't') ?  FLAG_T : 0);
-		ret = ret | ((av[i][c] == 'k') ?  FLAG_K : 0);
+		ret = ret | ((av[i][c] == 'a') ? FLAG_A : 0);
+		ret = ret | ((av[i][c] == 'q') ? FLAG_Q : 0);
+		ret = ret | ((av[i][c] == 'r') ? FLAG_R : 0);
+		ret = ret | ((av[i][c] == 'p') ? FLAG_P : 0);
+		ret = ret | ((av[i][c] == 'f') ? FLAG_F : 0);
+		ret = ret | ((av[i][c] == 'd') ? FLAG_D : 0);
+		ret = ret | ((av[i][c] == 't') ? FLAG_T : 0);
+		ret = ret | ((av[i][c] == 'k') ? FLAG_K : 0);
 		c++;
 	}
 	return (ret);
@@ -45,13 +45,14 @@ void	setflags(char **av, char **args)
 	ret = 0;
 	args[0][0] = -1;
 	args[0][1] = '\0';
+	args[2] = NULL;
 	while (av[i])
 	{
 		if (av[i][0] == '-')
-			{
-				if((ret = isflag(av, i, ret)) == -1)
-					return ;
-			}
+		{
+			if ((ret = isflag(av, i, ret)) == -1)
+				return ;
+		}
 		i++;
 	}
 	args[0][0] = ret;

@@ -117,18 +117,13 @@ int		main(int ac, char **av, char **envp)
 		_exit(-1);
 	}
 	args[1] = findshell(envp);
-	args[2] = NULL;
 	ioctl(STDIN_FILENO, TIOCGETA, &g_og);
 	ioctl(STDIN_FILENO, TIOCGWINSZ, &w);
 	pid = ft_forkpty(&master, &t, &w);
 	if (pid > 0)
-	{
 		do_parent(master, av, t, args[0][0]);
-	}
 	else if (!pid)
-	{
 		execve(args[1], &args[1], envp);
-	}
 	else
 		ft_putstr_fd("fork error\n", STDERR_FILENO);
 	return (0);
