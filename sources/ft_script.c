@@ -15,7 +15,7 @@
 
 struct termios g_og;
 
-void	fixflags(struct termios *t)
+void	setterm(struct termios *t)
 {
 	t->c_lflag &= ~(ICANON | ISIG | IEXTEN | ECHO);
 	t->c_iflag &= ~(BRKINT | ICRNL | IGNBRK | IGNCR | INLCR |
@@ -24,7 +24,7 @@ void	fixflags(struct termios *t)
 	t->c_cc[VTIME] = 0;
 }
 
-void	readstdin(int master, int file, char **av)
+void	readstdin(int master, int file, char **av, char flags)
 {
 	char	buf[4096];
 	int		bufsize;
@@ -36,7 +36,8 @@ void	readstdin(int master, int file, char **av)
 	else if (!bufsize)
 	{
 		ioctl(STDIN_FILENO, TIOCSETA, &g_og);
-		print_end(av, file);
+		if (!(flags & FLAG_Q))
+			print_end(av, file);
 		_exit(0);
 	}
 	else
@@ -46,7 +47,7 @@ void	readstdin(int master, int file, char **av)
 	}
 }
 
-void	readmaster(int master, int file, char **av)
+void	readmaster(int master, int file, char **av, char flags)
 {
 	char	buf[4096];
 	int		bufsize;
@@ -59,7 +60,8 @@ void	readmaster(int master, int file, char **av)
 	else if (!bufsize)
 	{
 		ioctl(STDIN_FILENO, TIOCSETA, &g_og);
-		print_end(av, file);
+		if (!(flags & FLAG_Q))
+			print_end(av, file);
 		_exit(0);
 	}
 	else
@@ -69,7 +71,7 @@ void	readmaster(int master, int file, char **av)
 	}
 }
 
-void	do_parent(int master, char **av, struct termios t)
+void	do_parent(int master, char **av, struct termios t, char flags)
 {
 	int		fd;
 	fd_set	fds;
@@ -77,10 +79,14 @@ void	do_parent(int master, char **av, struct termios t)
 
 	filename = findname(av);
 	t = g_og;
-	fixflags(&t);
+	setterm(&t);
 	ioctl(STDIN_FILENO, TIOCSETAF, &t);
-	fd = open(filename, O_CREAT | O_RDWR | O_TRUNC, 0755);
-	print_start(av, fd);
+	if (flags & FLAG_A)
+		fd = open(filename, O_CREAT | O_RDWR | O_APPEND, 0666);
+	else
+		fd = open(filename, O_CREAT | O_RDWR | O_TRUNC, 0666);
+	if (!(flags & FLAG_Q))
+		print_start(av, fd);
 	while (1)
 	{
 		FD_ZERO(&fds);
@@ -88,9 +94,9 @@ void	do_parent(int master, char **av, struct termios t)
 		FD_SET(master, &fds);
 		select(master + 1, &fds, NULL, NULL, NULL);
 		if (FD_ISSET(STDIN_FILENO, &fds))
-			readstdin(master, fd, av);
+			readstdin(master, fd, av, flags);
 		if (FD_ISSET(master, &fds))
-			readmaster(master, fd, av);
+			readmaster(master, fd, av, flags);
 	}
 }
 
@@ -100,21 +106,28 @@ int		main(int ac, char **av, char **envp)
 	int				master;
 	struct termios	t;
 	struct winsize	w;
-	char			*args[2];
+	char			*args[3];
 
 	(void)ac;
-	args[0] = findshell(envp);
-	args[1] = NULL;
+	t.c_iflag = t.c_iflag;
+	setflags(av, args);
+	if (args[0][0] == -1)
+	{
+		ft_putstr_fd("invalid flag\n", STDERR_FILENO);
+		_exit(-1);
+	}
+	args[1] = findshell(envp);
+	args[2] = NULL;
 	ioctl(STDIN_FILENO, TIOCGETA, &g_og);
 	ioctl(STDIN_FILENO, TIOCGWINSZ, &w);
 	pid = ft_forkpty(&master, &t, &w);
 	if (pid > 0)
 	{
-		do_parent(master, av, t);
+		do_parent(master, av, t, args[0][0]);
 	}
 	else if (!pid)
 	{
-		execve(args[0], args, envp);
+		execve(args[1], &args[1], envp);
 	}
 	else
 		ft_putstr_fd("fork error\n", STDERR_FILENO);

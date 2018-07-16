@@ -25,7 +25,7 @@ all: $(NAME)
 
 objects/%.o: sources/%.c
 	@/bin/mkdir -p objects
-	gcc -c -I$(INCLS) $< -o $@
+	gcc $(CCFLAGS) -I$(INCLS) $< -o $@
 
 $(NAME): $(OBJS)
 	gcc $(OBJS) -o $(NAME)

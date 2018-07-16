@@ -23,12 +23,23 @@
 
 # define MAX_NAME_LEN 1000
 
-void	fixflags(struct termios *t);
-void	readstdin(int master, int file, char **av);
-void	readmaster(int master, int file, char **av);
-void	do_parent(int master, char **av, struct termios t);
+# define FLAG_K 128
+# define FLAG_T 64
+# define FLAG_D 32
+# define FLAG_F 16
+# define FLAG_P 8
+# define FLAG_R 4
+# define FLAG_Q 2
+# define FLAG_A 1
+
+void	setterm(struct termios *t);
+void	readstdin(int master, int file, char **av, char flags);
+void	readmaster(int master, int file, char **av, char flags);
+void	do_parent(int master, char **av, struct termios t, char flags);
 void	do_child(char **av, char **envp);
 
+char	isflag(char **av, int i, char ret);
+void	setflags(char **av, char **args);
 void	dupstuff(int slavfd, const struct termios *termp,
 				const struct winsize *winp);
 int		ft_masteropen(char *slavname);
