@@ -12,6 +12,14 @@
 
 #include "ft_script.h"
 
+char	*get_time(void)
+{
+	time_t	curr_time;
+
+	curr_time = time(NULL);
+	return (ctime(&curr_time));
+}
+
 int		ft_strncmp(const char *s1, const char *s2, size_t n)
 {
 	size_t i;

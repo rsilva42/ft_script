@@ -108,15 +108,13 @@ int		main(int ac, char **av, char **envp)
 	struct winsize	w;
 	char			*args[3];
 
-	(void)ac;
 	t.c_iflag = t.c_iflag;
-	setflags(av, args);
-	if (args[0][0] == -1)
+	setflags(av, args, envp);
+	if (args[0][0] == -1 && !(ac % 1))
 	{
 		ft_putstr_fd("invalid flag\n", STDERR_FILENO);
 		_exit(-1);
 	}
-	args[1] = findshell(envp);
 	ioctl(STDIN_FILENO, TIOCGETA, &g_og);
 	ioctl(STDIN_FILENO, TIOCGWINSZ, &w);
 	pid = ft_forkpty(&master, &t, &w);

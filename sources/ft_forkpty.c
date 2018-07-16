@@ -36,7 +36,7 @@ char	isflag(char **av, int i, char ret)
 	return (ret);
 }
 
-void	setflags(char **av, char **args)
+void	setflags(char **av, char **args, char **envp)
 {
 	int		i;
 	char	ret;
@@ -45,6 +45,7 @@ void	setflags(char **av, char **args)
 	ret = 0;
 	args[0][0] = -1;
 	args[0][1] = '\0';
+	args[1] = findshell(envp);
 	args[2] = NULL;
 	while (av[i])
 	{

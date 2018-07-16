@@ -26,14 +26,6 @@ char	*findshell(char **envp)
 	return ("/bin/sh");
 }
 
-char	*get_time(void)
-{
-	time_t	curr_time;
-
-	curr_time = time(NULL);
-	return (ctime(&curr_time));
-}
-
 char	*findname(char **av)
 {
 	int		i;

@@ -39,20 +39,20 @@ void	do_parent(int master, char **av, struct termios t, char flags);
 void	do_child(char **av, char **envp);
 
 char	isflag(char **av, int i, char ret);
-void	setflags(char **av, char **args);
+void	setflags(char **av, char **args, char **envp);
 void	dupstuff(int slavfd, const struct termios *termp,
 				const struct winsize *winp);
 int		ft_masteropen(char *slavname);
 pid_t	ft_forkpty(int	*master, const struct termios *termp,
 					const struct winsize *winp);
 
+char	*get_time(void);
 int		ft_strncmp(const char *s1, const char *s2, size_t n);
 void	ft_putstr(char *s);
 void	ft_putstr_fd(char *s, int fd);
 char	*ft_strncpy(char *dst, const char *src, size_t len);
 
 char	*findshell(char **envp);
-char	*get_time(void);
 char	*findname(char **av);
 void	print_start(char **av, int fd);
 void	print_end(char **av, int fd);
